@@ -1,0 +1,110 @@
+import TitlePage from "../../components/commons/title_page/title_page";
+import styles from './styles.module.scss'
+import { useSelector } from "react-redux";
+import { useState } from "react";
+import useSWR, { mutate } from "swr";
+import config from "../../utils/config";
+import BackgroundLoader from "../../components/commons/background_loader/background_loader";
+import { get${mayusName}Service, add${mayusName}Service, edit${mayusName}Service, delete${mayusName}Service } from "../../utils/${name}/services/${name}_services";
+import Modal from "../../components/commons/modal/modal";
+import { IconButton } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
+import EditIcon from '@material-ui/icons/Edit';
+import Delete from '@material-ui/icons/Delete';
+
+
+const ${mayusName} = () => {
+
+    const url = `$${config.api_url}/`
+    const [selectedData, setSelectedData] = useState()
+    const user = useSelector((store) => store.user);
+    const [isLoading, setIsLoading] = useState(false)
+
+
+
+/* 
+    let { data } = useSWR(url, () => {
+        setIsLoading(true);
+        return get${mayusName}Service(user.user.token).then((result) => {
+            setIsLoading(false)
+            return result.result
+        })
+    }
+    );
+ */
+
+
+    async function add${mayusName}(e, data) {
+        e.preventDefault();
+        setIsLoading(true);
+        return await add${mayusName}Service(user.user.token, data).then((result) => {
+            setIsLoading(false);
+            mutate(url);
+            return result;
+        })
+    }
+
+    async function edit${mayusName}(e, data) {
+        e.preventDefault();
+        setIsLoading(true);
+        return await edit${mayusName}Service(user.user.token, data).then((result) => {
+            setIsLoading(false);
+            mutate(url);
+            return result;
+        })
+    }
+
+    async function delete${mayusName}(e, data) {
+        e.preventDefault();
+        setIsLoading(true);
+        return await delete${mayusName}Service(user.user.token, data).then((result) => {
+            setIsLoading(false);
+            mutate(url);
+            return result;
+        })
+    }
+
+
+    return (
+        <>
+        {isLoading && <BackgroundLoader show={isLoading} />}
+             <TitlePage title="${mayusName}" />  
+
+
+                <Modal
+                title="Agregar ${mayusName}"
+                body={ <AddIcon handleSubmitAction={add${mayusName}}/>}
+                button={
+                    <IconButton>
+                        <AddIcon />
+                    </IconButton>
+                }
+                />
+
+                <Modal
+                    title="Editar ${mayusName}"
+                    body={ <EditIcon handleSubmitAction={edit${mayusName}}/>}
+                    button={
+                        <IconButton onClick={() => setSelectedData()} >
+                            <EditIcon />
+                        </IconButton>
+                    }
+                />
+
+                <Modal
+                title="¿Seguro que deseas eliminar?"
+                body={ <Delete handleSubmitAction={delete${mayusName}}/>}
+                button={
+                    <IconButton onClick={() => setSelectedData()} >
+                        <Delete />
+                    </IconButton>
+                }
+                />
+        </>                          
+    )
+
+}
+
+
+export default ${mayusName};
+
